@@ -5,7 +5,7 @@ class ParticleNetwork {
         this.particles = [];
         this.mousePosition = { x: null, y: null };
         this.particleCount = 100;
-        this.connectDistance = 100;
+        this.connectDistance = 150;
         this.moveSpeed = 0.5;
 
         this.init();
@@ -80,8 +80,8 @@ class ParticleNetwork {
                 if (distance < this.connectDistance) {
                     const opacity = 1 - (distance / this.connectDistance);
                     this.ctx.beginPath();
-                    this.ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.2})`;
-                    this.ctx.lineWidth = 1;
+                    this.ctx.strokeStyle = `rgba(0, 0, 0, ${opacity * 0.3})`;
+                    this.ctx.lineWidth = 2;
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
                     this.ctx.stroke();
