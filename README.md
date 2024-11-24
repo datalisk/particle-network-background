@@ -11,6 +11,10 @@
 
 > A stunning, interactive particle network animation for modern web backgrounds. Built with pure JavaScript and HTML5 Canvas.
 
+<div align="center">
+  <img src="https://i.imgur.com/ZraTCeT.png" alt="Particle Network Demo" width="100%" style="max-width: 800px;">
+</div>
+
 ## ✨ Features
 
 - **Interactive Particle Network** - Dynamic particles that respond to mouse movements
