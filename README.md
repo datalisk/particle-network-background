@@ -1,6 +1,9 @@
 # 🌐 Animated Particle Network Background
 
 <div align="center">
+  [![GitHub stars](https://img.shields.io/github/stars/cloudwerxlab/particle-network-background.svg?style=social&label=Star&maxAge=2592000)](https://github.com/cloudwerxlab/particle-network-background/stargazers)
+  [![GitHub forks](https://img.shields.io/github/forks/cloudwerxlab/particle-network-background.svg?style=social&label=Fork&maxAge=2592000)](https://github.com/cloudwerxlab/particle-network-background/network)
+  [![GitHub issues](https://img.shields.io/github/issues/cloudwerxlab/particle-network-background.svg)](https://github.com/cloudwerxlab/particle-network-background/issues)
   <img src="favicon.svg" alt="Particle Network Logo" width="120">
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -11,27 +14,31 @@
 
 ## 🚀 Overview
 
-An elegant and interactive particle network animation that creates a dynamic, interconnected background effect. Perfect for modern web applications, portfolios, or any project requiring an engaging visual element.
+An elegant and interactive particle network animation that creates a dynamic, interconnected background effect. Perfect for modern web applications, portfolios, or any project requiring an engaging visual element. The animation features smooth particle movements, dynamic connections, and responsive mouse interactions, all rendered efficiently on an HTML5 canvas.
 
 ### ✨ Features
 
-- 🎯 Smooth particle animations
-- 🔄 Interactive mouse tracking
-- 📱 Fully responsive design
-- 🎨 Customizable appearance
-- 🖥️ Canvas-based rendering
-- ⚡ Optimized performance
+- 🎯 Smooth particle animations with configurable movement speed
+- 🔄 Interactive mouse tracking with force-based particle repulsion
+- 📱 Fully responsive design that adapts to any screen size
+- 🎨 Extensive customization options through an intuitive UI panel
+- 🖥️ Efficient canvas-based rendering with optimized performance
+- ⚡ Real-time parameter adjustments with live preview
+- 🎭 Dynamic particle pulsing effects
+- 🌈 Customizable colors with hex input support
+- 🔗 Adjustable connection line properties
+- 🎮 Toggle-able features and effects
 
 ## 🛠️ Installation
 
 1. Clone the repository:
    ```bash
-   git clone [your-repo-url]
+   git clone https://github.com/yourusername/animated-particle-network.git
    ```
 
 2. Navigate to the project directory:
    ```bash
-   cd animated-backgrounds-particle-network
+   cd animated-particle-network
    ```
 
 3. Open `index.html` in your browser or serve it using a local server.
@@ -40,7 +47,7 @@ An elegant and interactive particle network animation that creates a dynamic, in
 
 ### Basic Implementation
 
-Simply include the following files in your project:
+Include the necessary files in your project:
 
 ```html
 <link rel="stylesheet" href="styles.css">
@@ -50,141 +57,124 @@ Simply include the following files in your project:
 
 ### Customization
 
-You can customize the particle network by passing options when initializing:
+Initialize the particle network with custom options:
 
 ```javascript
-new ParticleNetwork({
-    particleCount: 120,      // Number of particles
-    connectDistance: 150,    // Maximum connection distance
-    moveSpeed: 0.6,         // Particle movement speed
-    maxRadius: 5,           // Maximum particle radius
+const particleNetwork = new ParticleNetwork(canvas, {
+    particleCount: 100,      // Number of particles
+    minRadius: 2,           // Minimum particle radius
+    maxRadius: 6,           // Maximum particle radius
+    particleColor: '#000000', // Particle color (hex)
+    lineColor: '#000000',    // Connection line color (hex)
+    lineWidth: 1,           // Connection line width
+    lineOpacity: 0.2,       // Connection line opacity
+    maxDistance: 150,       // Maximum connection distance
+    moveSpeed: 1,           // Particle movement speed
+    backgroundColor: '#ffffff', // Background color (hex)
+    backgroundOpacity: 1,    // Background opacity
+    particleOpacity: 1,     // Particle opacity
     mouseRadius: 200,       // Mouse interaction radius
-    pulseSpeed: 0.02,       // Particle pulse animation speed
-    lineWidth: 2           // Connection line width
+    mouseInteraction: true, // Enable mouse interaction
+    pulseEnabled: true,     // Enable pulse animation
+    pulseSpeed: 0          // Pulse animation speed (0-0.2)
 });
 ```
 
-#### Available Parameters:
+## 🎮 Controls
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| particleCount | 100 | Total number of particles |
-| connectDistance | 150 | Maximum distance for particle connections |
-| moveSpeed | 0.5 | Speed of particle movement |
-| particleColor | 'rgba(0, 0, 0, 0.6)' | Color of particles |
-| lineColor | 'rgba(0, 0, 0, 0.2)' | Color of connection lines |
-| minRadius | 1 | Minimum particle radius |
-| maxRadius | 5 | Maximum particle radius |
-| lineWidth | 2 | Thickness of connection lines |
-| mouseInteraction | true | Enable/disable mouse interaction |
-| mouseRadius | 150 | Radius of mouse interaction |
-| pulseEnabled | true | Enable/disable particle pulsing animation |
-| pulseSpeed | 0.01 | Speed of pulse animation |
-| particleLife | null | Particle lifetime (null for infinite) |
+### Interactive Settings Panel
 
-### Interactive Features
+Access the settings panel by clicking the gear icon in the top-right corner. The panel includes:
 
-1. **Mouse Interaction**
-   - Particles react to mouse movement
-   - Configurable interaction radius
-   - Smooth force-based movement
+1. **Background Settings**
+   - Color picker with hex input
+   - Opacity control
 
-2. **Particle Animation**
-   - Pulsing size effect
-   - Configurable animation speed
-   - Optional particle lifetime
+2. **Particle Settings**
+   - Particle count
+   - Movement speed
+   - Size range
+   - Color with hex input
+   - Opacity control
 
-3. **Visual Effects**
-   - Dynamic opacity based on distance
-   - Smooth edge bouncing
-   - Customizable colors and sizes
+3. **Connection Settings**
+   - Maximum connection distance
+   - Line width
+   - Color with hex input
+   - Opacity control
 
-### Advanced Usage Examples
+4. **Effect Settings**
+   - Mouse interaction radius
+   - Pulse animation speed
+   - Toggle mouse interaction
+   - Toggle pulse animation
 
-```javascript
-// Minimal setup with basic parameters
-new ParticleNetwork({
-    particleCount: 80,
-    connectDistance: 100,
-    moveSpeed: 0.3
-});
-
-// Full customization with all parameters
-new ParticleNetwork({
-    particleCount: 150,
-    connectDistance: 200,
-    moveSpeed: 0.8,
-    particleColor: 'rgba(66, 135, 245, 0.7)',
-    lineColor: 'rgba(66, 135, 245, 0.2)',
-    minRadius: 2,
-    maxRadius: 6,
-    lineWidth: 1.5,
-    mouseInteraction: true,
-    mouseRadius: 180,
-    pulseEnabled: true,
-    pulseSpeed: 0.015,
-    particleLife: 300
-});
-
-// Performance-focused setup
-new ParticleNetwork({
-    particleCount: 50,
-    connectDistance: 120,
-    moveSpeed: 0.4,
-    pulseEnabled: false,
-    mouseInteraction: false
-});
-```
+### Quick Actions
+- **Reset**: Restore all settings to default values
+- **Randomize**: Generate random colors for particles and connections
 
 ## 🎨 Styling
 
-The particle network can be styled by adjusting the CSS variables:
+### CSS Variables
+
+The project uses CSS variables for consistent theming:
 
 ```css
-#particleCanvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+:root {
+    --primary-color: #000000;
+    --text-color: #333333;
+    --panel-bg: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --blur-amount: 10px;
 }
 ```
 
+### Glass Effect
+
+The UI elements feature a modern glass effect with:
+- Backdrop blur
+- Subtle transparency
+- Soft shadows
+- Smooth transitions
+
 ## 🔧 Advanced Configuration
 
-### Particle Properties
+### Performance Optimization
 
-Each particle has the following properties:
-- Position (x, y)
-- Radius (1-5 pixels)
-- Velocity (vx, vy)
-- Connection opacity based on distance
+The animation is optimized for performance through:
+- Request Animation Frame usage
+- Efficient particle updates
+- Canvas clearing optimization
+- Event throttling
 
-### Connection Logic
+### Mobile Considerations
 
-Connections between particles are drawn when:
-1. Distance between particles is less than `connectDistance`
-2. Opacity is calculated based on distance
-3. Line width increases for closer particles
-
-## 📱 Browser Support
-
-- ✅ Chrome (latest)
-- ✅ Firefox (latest)
-- ✅ Safari (latest)
-- ✅ Edge (latest)
-- ✅ Opera (latest)
+The animation automatically adapts to mobile devices by:
+- Adjusting particle count
+- Optimizing touch interactions
+- Responsive UI adjustments
+- Performance-based rendering
 
 ## 🤝 Contributing
 
 Contributions are welcome! Here's how you can help:
 
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
+1. 🍴 Fork the repository
+2. 🌿 Create a new branch: `git checkout -b feature/your-feature-name`
+3. 💻 Make your changes
+4. ✅ Commit your changes: `git commit -m 'Add some feature'`
+5. 🚀 Push to the branch: `git push origin feature/your-feature-name`
+6. 📥 Submit a pull request
+
+### Issues and Bug Reports
+
+Found a bug or have a suggestion? Please check these steps:
+
+1. 🔍 Search the [existing issues](https://github.com/cloudwerxlab/particle-network-background/issues) first
+2. 📝 If not found, [create a new issue](https://github.com/cloudwerxlab/particle-network-background/issues/new)
+   - Include a clear title and description
+   - Add steps to reproduce the bug (if applicable)
+   - Include screenshots if helpful
 
 ## 📄 License
 
@@ -192,74 +182,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Inspired by modern web design trends
-- Built with vanilla JavaScript for maximum compatibility
-- Optimized for performance and responsiveness
+- Inspired by particle system animations
+- Built with modern web technologies
+- Optimized for performance and usability
 
 ---
 
 <div align="center">
-  <h2>💫 Created with passion by</h2>
-  
-  <img src="https://img.shields.io/badge/Developer-Tyler%20Doering-blue?style=for-the-badge&logo=visualstudiocode&logoColor=white&labelColor=2b3137" alt="Developer Badge"/>
-  
-  <h3>🏢 CloudWerx Lab</h3>
-  <p><em>Innovating the Future of Web Development</em></p>
-  
-  <div align="center">
-    <a href="https://cloudwerxlab.com" target="_blank">
-      <img src="https://img.shields.io/badge/Website-cloudwerxlab.com-blue?style=for-the-badge&logo=google-chrome&logoColor=white&labelColor=2b3137" alt="Website"/>
-    </a>
-    <br/>
-    <a href="mailto:cloudwerxlabs@gmail.com">
-      <img src="https://img.shields.io/badge/Email-cloudwerxlabs%40gmail.com-red?style=for-the-badge&logo=gmail&logoColor=white&labelColor=2b3137" alt="Email"/>
-    </a>
-  </div>
-
-  <br/>
-  
-  <div align="center">
-    <a href="https://github.com/cloudwerx" target="_blank">
-      <img src="https://img.shields.io/badge/GitHub-Follow-2b3137?style=for-the-badge&logo=github&logoColor=white" alt="GitHub"/>
-    </a>
-    <a href="https://linkedin.com/in/tylerdoering" target="_blank">
-      <img src="https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"/>
-    </a>
-  </div>
-
-  <br/>
-  
-  <div align="center">
-    <img src="https://img.shields.io/badge/Tech%20Stack-Frontend%20Development-2b3137?style=for-the-badge&logo=html5&logoColor=white" alt="Tech Stack"/>
-    <br/>
-    <img src="https://img.shields.io/badge/Specialization-UI%2FUX%20Design-2b3137?style=for-the-badge&logo=figma&logoColor=white" alt="Specialization"/>
-  </div>
-
-  <br/>
-  
-  <div>
-    <p><strong>🌟 "Crafting digital experiences that inspire"</strong></p>
-    <p>Specialized in creating elegant, performant, and user-centric web solutions</p>
-  </div>
-
-  <br/>
-  
-  <div align="center">
-    <table>
-      <tr>
-        <td align="center">
-          <img src="https://img.shields.io/badge/Available-Freelance%20Projects-success?style=for-the-badge&logo=upwork&logoColor=white" alt="Freelance"/>
-        </td>
-        <td align="center">
-          <img src="https://img.shields.io/badge/Open%20To-Collaboration-success?style=for-the-badge&logo=handshake&logoColor=white" alt="Collaboration"/>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <br/>
-  
-  <sub> 2024 CloudWerx Lab. All rights reserved.</sub>
-  <br/>
-  <sub>Made with 💻 in Silicon Valley, California</sub>
+  Made with ❤️ by <a href="https://cloudwerxlab.com">CloudWerx Lab</a> | <a href="https://github.com/cloudwerxlab/particle-network-background">GitHub Project</a>
 </div>
