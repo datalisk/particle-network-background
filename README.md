@@ -8,11 +8,11 @@
   ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=flat&logo=css3&logoColor=white)
   ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=flat&logo=javascript&logoColor=%23F7DF1E)
   
-  [![GitHub Release](https://img.shields.io/github/v/release/CloudWerxLabs/particle-network-background?include_prereleases&style=flat)](https://github.com/CloudWerxLabs/particle-network-background/releases)
-  [![GitHub Stars](https://img.shields.io/github/stars/CloudWerxLabs/particle-network-background?style=flat)](https://github.com/CloudWerxLabs/particle-network-background/stargazers)
-  [![GitHub Forks](https://img.shields.io/github/forks/CloudWerxLabs/particle-network-background?style=flat)](https://github.com/CloudWerxLabs/particle-network-background/network/members)
-  [![GitHub Issues](https://img.shields.io/github/issues/CloudWerxLabs/particle-network-background?style=flat)](https://github.com/CloudWerxLabs/particle-network-background/issues)
-  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/CloudWerxLabs/particle-network-background?style=flat)](https://github.com/CloudWerxLabs/particle-network-background/pulls)
+  [![GitHub Release](https://img.shields.io/github/v/release/cloudwerxlabs/particle-network-background?include_prereleases&style=flat)](https://github.com/cloudwerxlabs/particle-network-background/releases)
+  [![GitHub Stars](https://img.shields.io/github/stars/cloudwerxlabs/particle-network-background?style=flat)](https://github.com/cloudwerxlabs/particle-network-background/stargazers)
+  [![GitHub Forks](https://img.shields.io/github/forks/cloudwerxlabs/particle-network-background?style=flat)](https://github.com/cloudwerxlabs/particle-network-background/network/members)
+  [![GitHub Issues](https://img.shields.io/github/issues/cloudwerxlabs/particle-network-background?style=flat)](https://github.com/cloudwerxlabs/particle-network-background/issues)
+  [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/cloudwerxlabs/particle-network-background?style=flat)](https://github.com/cloudwerxlabs/particle-network-background/pulls)
 </div>
 
 > A stunning, interactive particle network animation for modern web backgrounds. Built with pure JavaScript and HTML5 Canvas.
