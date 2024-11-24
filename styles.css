@@ -1,10 +1,9 @@
-body, html {
+body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     overflow: hidden;
-    font-family: Arial, sans-serif;
-    background: white;
+    color: #1a1a1a;
 }
 
 #particleCanvas {
@@ -13,14 +12,88 @@ body, html {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: -1;
 }
 
 .content {
     position: relative;
-    z-index: 2;
+    padding: 2rem;
     text-align: center;
-    color: black;
-    padding-top: 50px;
-    pointer-events: none;
+    max-width: 800px;
+    margin: 0 auto;
+    padding-top: 15vh;
+}
+
+h1 {
+    font-size: 3.5rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.03em;
+    color: #000;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    font-weight: 400;
+    margin: 1rem 0 2rem;
+    color: #666;
+}
+
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    font-size: 1.2rem;
+}
+
+.feature-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 2rem;
+    font-weight: 400;
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding-top: 10vh;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .features {
+        gap: 1rem;
+    }
+
+    .feature {
+        padding: 0.4rem 0.8rem;
+    }
 }

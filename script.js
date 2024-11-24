@@ -148,10 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
     new ParticleNetwork({
         particleCount: 120,
         connectDistance: 150,
-        moveSpeed: 0.6,
+        moveSpeed: 0.504,
         maxRadius: 5,
         mouseRadius: 200,
-        pulseSpeed: 0.02,
+        pulseSpeed: 0.0168,
         lineWidth: 2
     });
 });
