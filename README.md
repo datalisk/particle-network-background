@@ -104,6 +104,161 @@ The animation and control panel automatically adapt to different screen sizes:
 
 ## 🔧 Advanced Configuration
 
+### Parameters Reference
+
+All available configuration parameters for the particle network:
+
+```javascript
+const defaultConfig = {
+  // Particle Settings
+  particleCount: 120,      // Number of particles (10-300)
+  minRadius: 1,           // Minimum particle radius (0.5-5)
+  maxRadius: 5,           // Maximum particle radius (2-10)
+  particleColor: '#000000', // Particle color in hex
+  particleOpacity: 1,     // Particle opacity (0-1)
+  
+  // Movement Settings
+  moveSpeed: 0.504,       // Particle movement speed (0.1-2)
+  mouseRadius: 200,       // Mouse interaction radius (50-400)
+  mouseInteraction: true, // Enable mouse interaction
+  
+  // Connection Settings
+  connectDistance: 150,   // Maximum connection distance (50-300)
+  lineWidth: 2,          // Connection line width (0.5-5)
+  lineColor: '#000000',   // Connection line color in hex
+  lineOpacity: 0.2,      // Connection line opacity (0-1)
+  
+  // Background Settings
+  backgroundColor: '#ffffff', // Background color in hex
+  backgroundOpacity: 1,    // Background opacity (0-1)
+  
+  // Animation Settings
+  pulseEnabled: true,     // Enable pulse animation
+  pulseSpeed: 0.0001      // Pulse animation speed (0.0001-0.2)
+}
+```
+
+### Parameter Details
+
+#### Particle Settings
+- `particleCount`: Total number of particles rendered
+  - Higher values create denser networks but impact performance
+  - Recommended: 80-150 for desktop, 30-80 for mobile
+  
+- `minRadius` & `maxRadius`: Particle size range
+  - Particles are randomly sized within this range
+  - Smaller particles (1-3px) work best for dense networks
+  - Larger particles (4-10px) create bold, sparse networks
+
+- `particleColor`: Color of individual particles
+  - Accepts hex color codes
+  - Use lighter colors for dark backgrounds
+  - Darker colors work best on light backgrounds
+
+- `particleOpacity`: Particle transparency
+  - 1 = fully opaque
+  - 0.5-0.8 creates subtle depth
+  - Lower values work well with higher particle counts
+
+#### Movement Settings
+- `moveSpeed`: Controls particle velocity
+  - 0.1 = very slow, dreamy movement
+  - 0.5 = balanced, natural movement
+  - 1.0+ = fast, energetic movement
+  
+- `mouseRadius`: Mouse interaction area
+  - Larger radius = more particles affected
+  - Smaller radius = more precise interaction
+  - Adjust based on particle density
+
+- `mouseInteraction`: Toggle mouse effects
+  - When true, particles respond to mouse movement
+  - False disables all mouse-related effects
+  - Useful for static backgrounds
+
+#### Connection Settings
+- `connectDistance`: Maximum line length
+  - Affects network density significantly
+  - Larger values create more connections
+  - Consider performance with high particle counts
+
+- `lineWidth`: Connection thickness
+  - Thin lines (0.5-1) for subtle networks
+  - Thicker lines (2-5) for bold visuals
+  - Impacts rendering performance
+
+- `lineColor`: Connection line color
+  - Can match or contrast particle color
+  - Semi-transparent lines work well
+  - Consider contrast with background
+
+- `lineOpacity`: Line transparency
+  - Lower values (0.1-0.3) for subtle connections
+  - Higher values (0.4-1) for prominent networks
+  - Affects visual density perception
+
+#### Background Settings
+- `backgroundColor`: Canvas background
+  - Sets base color for animation
+  - Consider contrast with particles
+  - Can be fully transparent
+
+- `backgroundOpacity`: Background transparency
+  - 1 = solid background
+  - 0 = fully transparent
+  - Useful for overlaying on other content
+
+#### Animation Settings
+- `pulseEnabled`: Toggle size animation
+  - Adds subtle life to static scenes
+  - Works well with slower move speeds
+  - Minimal performance impact
+
+- `pulseSpeed`: Animation timing
+  - 0.0001-0.001 = very subtle pulse
+  - 0.001-0.01 = noticeable rhythm
+  - 0.01-0.2 = dramatic pulsing
+
+### Usage Example
+
+```javascript
+// Create a dreamy, subtle network
+const dreamyConfig = {
+  particleCount: 100,
+  minRadius: 1,
+  maxRadius: 3,
+  particleColor: '#4a90e2',
+  particleOpacity: 0.7,
+  moveSpeed: 0.3,
+  connectDistance: 120,
+  lineWidth: 1,
+  lineColor: '#4a90e2',
+  lineOpacity: 0.15,
+  backgroundColor: '#1a1a1a',
+  backgroundOpacity: 1,
+  pulseEnabled: true,
+  pulseSpeed: 0.0005
+};
+
+// Create an energetic, bold network
+const energeticConfig = {
+  particleCount: 150,
+  minRadius: 2,
+  maxRadius: 4,
+  particleColor: '#ff4444',
+  particleOpacity: 1,
+  moveSpeed: 0.8,
+  connectDistance: 180,
+  lineWidth: 2,
+  lineColor: '#ff4444',
+  lineOpacity: 0.3,
+  backgroundColor: '#ffffff',
+  backgroundOpacity: 1,
+  pulseEnabled: true,
+  pulseSpeed: 0.01
+};
+```
+
 ### Custom Integration
 
 1. **Canvas Setup**
