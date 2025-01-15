@@ -1,4 +1,4 @@
-import {ParticleNetwork} from './index.js';
+import {defaultConfig, ParticleNetwork} from './index.js';
 
 // Initialize the particle network when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,26 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
         canvas.width = event.target.width;
         canvas.height = event.target.height;
     };
-    
-    const particleNetwork = new ParticleNetwork(canvas, {
-        particleCount: 100,
-        minRadius: 2,
-        maxRadius: 6,
-        particleColor: '#000000',
-        lineColor: '#000000',
-        lineWidth: 1,
-        lineOpacity: 0.2,
-        maxDistance: 150,
-        moveSpeed: 60,
-        backgroundColor: '#ffffff',
-        backgroundOpacity: 1,
-        particleOpacity: 1,
-        mouseRadius: 200,
-        mouseInteraction: true,
-        mouseRepelPower: 14,
-        pulseEnabled: true,
-        pulseSpeed: 0
-    });
+
+    let config = defaultConfig;
+    const particleNetwork = new ParticleNetwork(canvas, config);
     
     // Start the animation immediately
     particleNetwork.start();
@@ -66,26 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
     controlPanel.addEventListener('click', (e) => {
         e.stopPropagation();
     });
-
-    // Store default values for reset
-    const defaultValues = {
-        particleCount: 100,
-        minRadius: 2,
-        maxRadius: 6,
-        particleColor: '#000000',
-        lineColor: '#000000',
-        lineWidth: 1,
-        lineOpacity: 0.2,
-        maxDistance: 150,
-        moveSpeed: 1,
-        backgroundColor: '#ffffff',
-        backgroundOpacity: 1,
-        particleOpacity: 1,
-        mouseRadius: 200,
-        mouseInteraction: true,
-        pulseEnabled: true,
-        pulseSpeed: 0,
-    };
 
     // Helper function to update value display
     const updateValueDisplay = (input) => {
@@ -130,15 +93,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const opacity = parseInt(opacityInput.value) / 100;
         
         if (property === 'backgroundColor') {
-            particleNetwork.updateConfig('backgroundColor', color);
-            particleNetwork.updateConfig('backgroundOpacity', opacity);
+            config.backgroundColor = color;
+            config.backgroundOpacity = opacity;
         } else if (property === 'particleColor') {
-            particleNetwork.updateConfig('particleColor', color);
-            particleNetwork.updateConfig('particleOpacity', opacity);
+            config.particleColor = color;
+            config.particleOpacity = opacity;
         } else if (property === 'lineColor') {
-            particleNetwork.updateConfig('lineColor', color);
-            particleNetwork.updateConfig('lineOpacity', opacity);
+            config.lineColor = color;
+            config.lineOpacity = opacity;
         }
+
+        particleNetwork.updateConfig(config);
     };
 
     // Setup color picker and hex input pairs
@@ -206,34 +171,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateValueDisplay(e.target);
                 
                 // Update particle network property
-                particleNetwork.updateConfig(e.target.id, value);
+                config[e.target.id] = value; // TODO fix bypassing of type-checking
+                particleNetwork.updateConfig(config);
             });
         }
     });
 
     // Reset button handler
     document.getElementById('reset').addEventListener('click', () => {
-        const defaults = {
-            particleCount: 100,
-            minRadius: 2,
-            maxRadius: 6,
-            particleColor: '#000000',
-            lineColor: '#000000',
-            lineWidth: 1,
-            lineOpacity: 0.2,
-            maxDistance: 150,
-            moveSpeed: 1,
-            backgroundColor: '#ffffff',
-            backgroundOpacity: 1,
-            particleOpacity: 1,
-            mouseRadius: 200,
-            mouseInteraction: true,
-            pulseEnabled: true,
-            pulseSpeed: 0,
-        };
+        config = defaultConfig;
 
         // Update all inputs with default values
-        Object.entries(defaults).forEach(([key, value]) => {
+        Object.entries(config).forEach(([key, value]) => {
             const input = document.getElementById(key);
             if (!input) return;
             
@@ -266,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'lineColor'
         );
         
-        particleNetwork.reset(defaults);
+        particleNetwork.updateConfig(config);
     });
 
     // Randomize button handler

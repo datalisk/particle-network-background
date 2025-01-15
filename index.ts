@@ -16,7 +16,7 @@ export class ParticleNetwork {
     boundHandleMouseLeave;
     lastTimestamp: DOMHighResTimeStamp | null = null;
 
-    constructor(canvas: HTMLCanvasElement, config: ParticleNetworkConfig) {
+    constructor(canvas: HTMLCanvasElement, userConfig: ParticleNetworkConfig) {
         // Canvas setup and context
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d', { alpha: true })!; // Enable transparency
@@ -24,28 +24,7 @@ export class ParticleNetwork {
             throw new Error('Could not initialize canvas context');
         }
 
-        this.config = config;
-        // TODO move outside
-        // // Validate and set configuration
-        // this.config = this.validateConfig({
-        //     particleCount: 100,
-        //     minRadius: 2,
-        //     maxRadius: 6,
-        //     particleColor: '#000000',
-        //     lineColor: '#000000',
-        //     lineWidth: 1,
-        //     lineOpacity: 0.2,
-        //     maxDistance: 150,
-        //     moveSpeed: 1,
-        //     backgroundColor: '#ffffff',
-        //     backgroundOpacity: 1,
-        //     particleOpacity: 1,
-        //     mouseRadius: 200,
-        //     mouseInteraction: true,
-        //     pulseEnabled: true,
-        //     pulseSpeed: 0,
-        //     ...config
-        // });
+        this.config = createConfig(userConfig);
 
         // Initialize state
         this.particles = [];
@@ -59,44 +38,6 @@ export class ParticleNetwork {
         // Set up initial state
         this.createParticles();
         this.setupEventListeners();
-    }
-
-    /**
-     * Validate configuration parameters
-     * @param {Object} config - Configuration object
-     * @returns {Object} Validated configuration
-     */
-    validateConfig(config) {
-        // Validate numeric parameters
-        const numericParams = [
-            'particleCount', 'minRadius', 'maxRadius', 'lineWidth', 
-            'lineOpacity', 'maxDistance', 'moveSpeed', 'backgroundOpacity', 
-            'particleOpacity', 'mouseRadius', 'pulseSpeed'
-        ];
-        numericParams.forEach(param => {
-            if (typeof config[param] !== 'number' || isNaN(config[param])) {
-                throw new Error(`Invalid ${param}: must be a number`);
-            }
-        });
-
-        // Validate boolean parameters
-        const booleanParams = ['mouseInteraction', 'pulseEnabled'];
-        booleanParams.forEach(param => {
-            if (typeof config[param] !== 'boolean') {
-                throw new Error(`Invalid ${param}: must be a boolean`);
-            }
-        });
-
-        // Validate color parameters
-        const colorParams = ['backgroundColor', 'particleColor', 'lineColor'];
-        const hexColorRegex = /^#[0-9A-Fa-f]{6}$/;
-        colorParams.forEach(param => {
-            if (!hexColorRegex.test(config[param])) {
-                throw new Error(`Invalid ${param}: must be a valid hex color`);
-            }
-        });
-
-        return config;
     }
 
     /**
@@ -319,49 +260,74 @@ export class ParticleNetwork {
 
     /**
      * Update configuration and restart animation if needed
-     * @param {string} property - Property to update
-     * @param {any} value - New value
      */
-    updateConfig(property, value) {
-        // Update the configuration value
-        this.config[property] = value;
+    updateConfig(userConfig: ParticleNetworkConfig) {
+        const oldConfig = this.config;
+        const newConfig = createConfig(userConfig);
+        this.config = newConfig;
         
-        // Recreate particles if count changes
-        if (property === 'particleCount') {
+        if (oldConfig.particleCount != newConfig.particleCount) {
             this.createParticles();
         }
         
         // Update speed for all particles if speed changes
-        if (property === 'moveSpeed') {
+        if (oldConfig.moveSpeed != newConfig.moveSpeed) {
             this.particles.forEach(particle => {
                 const currentSpeed = Math.sqrt(particle.xSpeed * particle.xSpeed + particle.ySpeed * particle.ySpeed);
                 if (currentSpeed > 0) {
-                    particle.xSpeed = (particle.xSpeed / currentSpeed) * value;
-                    particle.ySpeed = (particle.ySpeed / currentSpeed) * value;
+                    particle.xSpeed = (particle.xSpeed / currentSpeed) * newConfig.moveSpeed;
+                    particle.ySpeed = (particle.ySpeed / currentSpeed) * newConfig.moveSpeed;
                 }
             });
         }
 
         // Update particle sizes if min or max radius changes
-        if (property === 'minRadius' || property === 'maxRadius') {
+        if (oldConfig.minRadius != newConfig.minRadius || oldConfig.maxRadius != newConfig.maxRadius) {
             this.particles.forEach(particle => {
-                const sizeRange = this.config.maxRadius - this.config.minRadius;
-                const randomSize = Math.random() * sizeRange + this.config.minRadius;
+                const sizeRange = oldConfig.maxRadius - oldConfig.minRadius;
+                const randomSize = Math.random() * sizeRange + oldConfig.minRadius;
                 particle.radius = randomSize;
             });
         }
     }
 
-    /**
-     * Reset to default configuration
-     * @param {Object} defaults - Default configuration
-     */
-    reset(defaults) {
-        this.config = this.validateConfig(defaults);
-        this.createParticles();
-        this.stop();
-        this.start();
-    }
+}
+
+export const defaultConfig: ParticleNetworkConfig = {
+    particleCount: 100,
+    minRadius: 2,
+    maxRadius: 6,
+    particleColor: '#000000',
+    lineColor: '#000000',
+    lineWidth: 1,
+    lineOpacity: 0.2,
+    maxDistance: 150,
+    moveSpeed: 60,
+    backgroundColor: '#ffffff',
+    backgroundOpacity: 1,
+    particleOpacity: 1,
+    mouseRadius: 200,
+    mouseInteraction: true,
+    mouseRepelPower: 14,
+    pulseEnabled: true,
+    pulseSpeed: 0,
+};
+
+function createConfig(newConfig: ParticleNetworkConfig) {
+    const config = Object.assign({}, defaultConfig, newConfig);
+
+    function checkColorValue(color: string) {
+        const hexColorRegex = /^#[0-9A-Fa-f]{6}$/;
+        if (!hexColorRegex.test(color)) {
+            throw new Error(`Invalid ${color}: must be a valid hex color`);
+        }
+    };
+
+    checkColorValue(config.backgroundColor);
+    checkColorValue(config.particleColor);
+    checkColorValue(config.lineColor);
+
+    return config;
 }
 
 interface Particle {
