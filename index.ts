@@ -12,7 +12,6 @@ export class ParticleNetwork {
     isRunning: boolean;
     mousePosition: MousePosition | null;
     pulseAngle: number;
-    boundHandleResize;
     boundHandleMouseMove;
     boundHandleMouseLeave;
     lastTimestamp: DOMHighResTimeStamp | null = null;
@@ -54,12 +53,10 @@ export class ParticleNetwork {
         this.isRunning = false;
         this.mousePosition = null;
         this.pulseAngle = 0;
-        this.boundHandleResize = this.handleResize.bind(this);
         this.boundHandleMouseMove = this.handleMouseMove.bind(this);
         this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
         
         // Set up initial state
-        this.handleResize();
         this.createParticles();
         this.setupEventListeners();
     }
@@ -106,7 +103,6 @@ export class ParticleNetwork {
      * Set up event listeners
      */
     setupEventListeners() {
-        window.addEventListener('resize', this.boundHandleResize);
         this.canvas.addEventListener('mousemove', this.boundHandleMouseMove);
         this.canvas.addEventListener('mouseleave', this.boundHandleMouseLeave);
     }
@@ -115,7 +111,6 @@ export class ParticleNetwork {
      * Clean up event listeners
      */
     cleanup() {
-        window.removeEventListener('resize', this.boundHandleResize);
         this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove);
         this.canvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
         this.stop();
@@ -140,14 +135,6 @@ export class ParticleNetwork {
     }
 
     /**
-     * Handle resize
-     */
-    handleResize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-    }
-
-    /**
      * Create initial set of particles with random positions
      */
     createParticles() {
@@ -164,7 +151,7 @@ export class ParticleNetwork {
             });
         }
     }
-
+    
     /**
      * Update particle positions and handle boundary collisions
      */

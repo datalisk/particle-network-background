@@ -4,6 +4,14 @@ import {ParticleNetwork} from './index.js';
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize particle network with default settings
     const canvas = document.getElementById('particleCanvas');
+    canvas.width = window.visualViewport.width;
+    canvas.height = window.visualViewport.height;
+    
+    window.visualViewport.onresize = (event) => {
+        canvas.width = event.target.width;
+        canvas.height = event.target.height;
+    };
+    
     const particleNetwork = new ParticleNetwork(canvas, {
         particleCount: 100,
         minRadius: 2,
