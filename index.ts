@@ -7,14 +7,15 @@ export class ParticleNetwork {
     ctx: CanvasRenderingContext2D;
     config: ParticleNetworkConfig;
 
-    particles;
-    animationId;
+    particles: Particle[] = [];
+    animationId: number | null;
     isRunning: boolean;
-    mousePosition;
+    mousePosition: MousePosition | null;
     pulseAngle: number;
     boundHandleResize;
     boundHandleMouseMove;
     boundHandleMouseLeave;
+    lastTimestamp: DOMHighResTimeStamp | null = null;
 
     constructor(canvas: HTMLCanvasElement, config: ParticleNetworkConfig) {
         // Canvas setup and context
@@ -122,9 +123,8 @@ export class ParticleNetwork {
 
     /**
      * Handle mouse movement
-     * @param {MouseEvent} e - Mouse event
      */
-    handleMouseMove(e) {
+    handleMouseMove(e: MouseEvent) {
         const rect = this.canvas.getBoundingClientRect();
         this.mousePosition = {
             x: e.clientX - rect.left,
@@ -158,8 +158,8 @@ export class ParticleNetwork {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                dx: (Math.random() - 0.5) * this.config.moveSpeed,
-                dy: (Math.random() - 0.5) * this.config.moveSpeed,
+                xSpeed: (Math.random() - 0.5) * this.config.moveSpeed * 2,
+                ySpeed: (Math.random() - 0.5) * this.config.moveSpeed * 2,
                 radius: randomSize
             });
         }
@@ -168,7 +168,7 @@ export class ParticleNetwork {
     /**
      * Update particle positions and handle boundary collisions
      */
-    updateParticles() {
+    updateParticles(timestamp: DOMHighResTimeStamp) {
         this.particles.forEach(particle => {
             // Update pulse effect
             if (this.config.pulseEnabled) {
@@ -180,8 +180,18 @@ export class ParticleNetwork {
             }
 
             // Update position
-            particle.x += particle.dx;
-            particle.y += particle.dy;
+            let dx: number, dy: number;
+            if (this.lastTimestamp != null) {
+                // time factor adjusts the movement to the screen refresh rate
+                const timeFactor = (timestamp - this.lastTimestamp) / 1000;
+                dx = timeFactor * particle.xSpeed;
+                dy = timeFactor * particle.ySpeed;
+            } else {
+                dx = 0;
+                dy = 0;
+            }
+            particle.x += dx;
+            particle.y += dy;
 
             // Mouse interaction
             if (this.config.mouseInteraction && this.mousePosition) {
@@ -192,28 +202,30 @@ export class ParticleNetwork {
                 if (distance < this.config.mouseRadius) {
                     const force = (this.config.mouseRadius - distance) / this.config.mouseRadius;
                     const angle = Math.atan2(dy, dx);
-                    const repelX = Math.cos(angle) * force * 0.5;
-                    const repelY = Math.sin(angle) * force * 0.5;
-                    particle.dx -= repelX;
-                    particle.dy -= repelY;
+                    const repelX = Math.cos(angle) * force * this.config.mouseRepelPower;
+                    const repelY = Math.sin(angle) * force * this.config.mouseRepelPower;
+                    particle.xSpeed -= repelX;
+                    particle.ySpeed -= repelY;
                 }
             }
 
             // Bounce off walls
             if (particle.x < 0 || particle.x > this.canvas.width) {
-                particle.dx = -particle.dx;
+                particle.xSpeed = -particle.xSpeed;
             }
             if (particle.y < 0 || particle.y > this.canvas.height) {
-                particle.dy = -particle.dy;
+                particle.ySpeed = -particle.ySpeed;
             }
 
             // Apply speed limits
-            const speed = Math.sqrt(particle.dx * particle.dx + particle.dy * particle.dy);
+            const speed = Math.sqrt(particle.xSpeed * particle.xSpeed + particle.ySpeed * particle.ySpeed);
             if (speed > this.config.moveSpeed) {
-                particle.dx = (particle.dx / speed) * this.config.moveSpeed;
-                particle.dy = (particle.dy / speed) * this.config.moveSpeed;
+                particle.xSpeed = (particle.xSpeed / speed) * this.config.moveSpeed;
+                particle.ySpeed = (particle.ySpeed / speed) * this.config.moveSpeed;
             }
         });
+
+        this.lastTimestamp = timestamp;
     }
 
     /**
@@ -259,7 +271,7 @@ export class ParticleNetwork {
      * @param {string} hex - Hex color code
      * @returns {string} RGB values as "r,g,b"
      */
-    hexToRgb(hex) {
+    hexToRgb(hex: string) {
         // Remove # if present
         hex = hex.replace(/^#/, '');
 
@@ -293,14 +305,14 @@ export class ParticleNetwork {
     start() {
         if (!this.isRunning) {
             this.isRunning = true;
-            this.animate();
+            this.animate(performance.now());
         }
     }
 
     /**
      * Main animation loop
      */
-    animate() {
+    animate(timestamp: DOMHighResTimeStamp) {
         // Clear the canvas
         this.ctx.fillStyle = this.config.backgroundColor;
         this.ctx.globalAlpha = this.config.backgroundOpacity;
@@ -308,13 +320,13 @@ export class ParticleNetwork {
         this.ctx.globalAlpha = 1;
         
         // Update and draw
-        this.updateParticles();
+        this.updateParticles(timestamp);
         this.drawParticles();
         this.drawConnections();
         
         // Continue animation
         if (this.isRunning) {
-            this.animationId = requestAnimationFrame(() => this.animate());
+            this.animationId = requestAnimationFrame((timestamp: DOMHighResTimeStamp) => this.animate(timestamp));
         }
     }
 
@@ -335,10 +347,10 @@ export class ParticleNetwork {
         // Update speed for all particles if speed changes
         if (property === 'moveSpeed') {
             this.particles.forEach(particle => {
-                const currentSpeed = Math.sqrt(particle.dx * particle.dx + particle.dy * particle.dy);
+                const currentSpeed = Math.sqrt(particle.xSpeed * particle.xSpeed + particle.ySpeed * particle.ySpeed);
                 if (currentSpeed > 0) {
-                    particle.dx = (particle.dx / currentSpeed) * value;
-                    particle.dy = (particle.dy / currentSpeed) * value;
+                    particle.xSpeed = (particle.xSpeed / currentSpeed) * value;
+                    particle.ySpeed = (particle.ySpeed / currentSpeed) * value;
                 }
             });
         }
@@ -365,6 +377,25 @@ export class ParticleNetwork {
     }
 }
 
+interface Particle {
+    x: number;
+    y: number;
+
+    /** x axis speed (pixels per second) */
+    xSpeed: number;
+
+    /** y axis speed (pixels per second) */
+    ySpeed: number;
+
+    radius: number;
+    currentRadius?: number;
+}
+
+interface MousePosition {
+    x: number;
+    y: number;
+}
+
 export interface ParticleNetworkConfig {
     particleCount: number,
     minRadius: number,
@@ -374,12 +405,16 @@ export interface ParticleNetworkConfig {
     lineWidth: number,
     lineOpacity: number,
     maxDistance: number,
+
+    /** base particle speed (pixels per second) */
     moveSpeed: number,
+
     backgroundColor: string,
     backgroundOpacity: number,
     particleOpacity: number,
     mouseRadius: number,
     mouseInteraction: boolean,
+    mouseRepelPower: number;
     pulseEnabled: boolean,
     pulseSpeed: number,
 }

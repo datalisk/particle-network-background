@@ -13,12 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
         lineWidth: 1,
         lineOpacity: 0.2,
         maxDistance: 150,
-        moveSpeed: 1,
+        moveSpeed: 60,
         backgroundColor: '#ffffff',
         backgroundOpacity: 1,
         particleOpacity: 1,
         mouseRadius: 200,
         mouseInteraction: true,
+        mouseRepelPower: 14,
         pulseEnabled: true,
         pulseSpeed: 0
     });
