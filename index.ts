@@ -3,18 +3,17 @@
  * Creates and manages an interactive particle network animation
  */
 export class ParticleNetwork {
-    canvas: HTMLCanvasElement;
-    ctx: CanvasRenderingContext2D;
-    config: ParticleNetworkConfig;
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+    private config: ParticleNetworkConfig;
 
-    particles: Particle[] = [];
-    animationId: number | null = null;
-    isRunning: boolean = false;
-    mousePosition: MousePosition | null = null;
-    pulseAngle: number = 0;
-    boundHandleMouseMove: (e: MouseEvent) => void;
-    boundHandleMouseLeave: (e: MouseEvent) => void;
-    lastTimestamp: DOMHighResTimeStamp | null = null;
+    private particles: Particle[] = [];
+    private animationId: number | null = null;
+    private isRunning: boolean = false;
+    private pointer: Pointer | null = null;
+    private pulseAngle: number = 0;
+    private boundHandlePointerEvent = this.handlePointerEvent.bind(this);
+    private lastTimestamp: DOMHighResTimeStamp | null = null;
 
     constructor(canvas: HTMLCanvasElement, userConfig: ParticleNetworkConfig) {
         // Canvas setup and context
@@ -25,26 +24,25 @@ export class ParticleNetwork {
         }
 
         this.config = createConfig(userConfig);
-
-        this.boundHandleMouseMove = this.handleMouseMove.bind(this);
-        this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
-        this.setupEventListeners();
     }
 
-    /**
-     * Set up event listeners
-     */
-    setupEventListeners() {
-        this.canvas.addEventListener('mousemove', this.boundHandleMouseMove);
-        this.canvas.addEventListener('mouseleave', this.boundHandleMouseLeave);
+    start() {
+        this.canvas.addEventListener('pointermove', this.boundHandlePointerEvent);
+        this.canvas.addEventListener('pointerleave', this.boundHandlePointerEvent);
+        this.canvas.addEventListener('pointerdown', this.boundHandlePointerEvent);
+        this.canvas.addEventListener('pointerup', this.boundHandlePointerEvent);
+
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.animate(performance.now());
+        }
     }
 
-    /**
-     * Clean up event listeners
-     */
     stop() {
-        this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove);
-        this.canvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
+        this.canvas.removeEventListener('pointermove', this.boundHandlePointerEvent);
+        this.canvas.removeEventListener('pointerleave', this.boundHandlePointerEvent);
+        this.canvas.removeEventListener('pointerdown', this.boundHandlePointerEvent);
+        this.canvas.removeEventListener('pointerup', this.boundHandlePointerEvent);
 
         this.isRunning = false;
         if (this.animationId) {
@@ -53,22 +51,18 @@ export class ParticleNetwork {
         }
     }
 
-    /**
-     * Handle mouse movement
-     */
-    handleMouseMove(e: MouseEvent) {
-        const rect = this.canvas.getBoundingClientRect();
-        this.mousePosition = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
-        };
-    }
-
-    /**
-     * Handle mouse leave
-     */
-    handleMouseLeave() {
-        this.mousePosition = null;
+    handlePointerEvent(e: PointerEvent) {
+        if (e.type == "pointerleave") {
+            this.pointer = null;
+        } else {
+            const canvasPos = this.canvas.getBoundingClientRect();
+            this.pointer = {
+                x: e.clientX - canvasPos.left,
+                y: e.clientY - canvasPos.top,
+                pressed: e.buttons > 0,
+                isMouse: e.pointerType == "mouse",
+            };
+        }
     }
 
     /**
@@ -99,7 +93,7 @@ export class ParticleNetwork {
     /**
      * Update particle positions and handle boundary collisions
      */
-    updateParticles(timestamp: DOMHighResTimeStamp) {
+    private updateParticles(timestamp: DOMHighResTimeStamp) {
         const particles = this.createParticles();
 
         particles.forEach(particle => {
@@ -127,9 +121,9 @@ export class ParticleNetwork {
             particle.y += dy;
 
             // Mouse interaction
-            if (this.config.mouseInteraction && this.mousePosition) {
-                const dx = this.mousePosition.x - particle.x;
-                const dy = this.mousePosition.y - particle.y;
+            if (this.config.mouseInteraction && this.pointer && (this.pointer.pressed || this.pointer.isMouse)) {
+                const dx = this.pointer.x - particle.x;
+                const dy = this.pointer.y - particle.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < this.config.mouseRadius) {
@@ -173,7 +167,7 @@ export class ParticleNetwork {
     /**
      * Draw all particles on the canvas
      */
-    drawParticles() {
+    private drawParticles() {
         this.ctx.fillStyle = this.config.particleColor;
         this.ctx.globalAlpha = this.config.particleOpacity;
         this.particles.forEach(particle => {
@@ -187,7 +181,7 @@ export class ParticleNetwork {
     /**
      * Draw connections between nearby particles
      */
-    drawConnections() {
+    private drawConnections() {
         for (let i = 0; i < this.particles.length; i++) {
             for (let j = i + 1; j < this.particles.length; j++) {
                 const dx = this.particles[i].x - this.particles[j].x;
@@ -213,7 +207,7 @@ export class ParticleNetwork {
      * @param {string} hex - Hex color code
      * @returns {string} RGB values as "r,g,b"
      */
-    hexToRgb(hex: string) {
+    private hexToRgb(hex: string) {
         // Remove # if present
         hex = hex.replace(/^#/, '');
 
@@ -231,19 +225,9 @@ export class ParticleNetwork {
     }
 
     /**
-     * Start the animation
-     */
-    start() {
-        if (!this.isRunning) {
-            this.isRunning = true;
-            this.animate(performance.now());
-        }
-    }
-
-    /**
      * Main animation loop
      */
-    animate(timestamp: DOMHighResTimeStamp) {
+    private animate(timestamp: DOMHighResTimeStamp) {
         // Clear the canvas
         this.ctx.fillStyle = this.config.backgroundColor;
         this.ctx.globalAlpha = this.config.backgroundOpacity;
@@ -347,9 +331,11 @@ interface Particle {
     currentRadius?: number;
 }
 
-interface MousePosition {
+interface Pointer {
     x: number;
     y: number;
+    pressed: boolean;
+    isMouse: boolean;
 }
 
 export interface ParticleNetworkConfig {
