@@ -8,12 +8,12 @@ export class ParticleNetwork {
     config: ParticleNetworkConfig;
 
     particles: Particle[] = [];
-    animationId: number | null;
-    isRunning: boolean;
-    mousePosition: MousePosition | null;
-    pulseAngle: number;
-    boundHandleMouseMove;
-    boundHandleMouseLeave;
+    animationId: number | null = null;
+    isRunning: boolean = false;
+    mousePosition: MousePosition | null = null;
+    pulseAngle: number = 0;
+    boundHandleMouseMove: (e: MouseEvent) => void;
+    boundHandleMouseLeave: (e: MouseEvent) => void;
     lastTimestamp: DOMHighResTimeStamp | null = null;
 
     constructor(canvas: HTMLCanvasElement, userConfig: ParticleNetworkConfig) {
@@ -26,17 +26,8 @@ export class ParticleNetwork {
 
         this.config = createConfig(userConfig);
 
-        // Initialize state
-        this.particles = [];
-        this.animationId = null;
-        this.isRunning = false;
-        this.mousePosition = null;
-        this.pulseAngle = 0;
         this.boundHandleMouseMove = this.handleMouseMove.bind(this);
         this.boundHandleMouseLeave = this.handleMouseLeave.bind(this);
-        
-        // Set up initial state
-        this.createParticles();
         this.setupEventListeners();
     }
 
@@ -51,10 +42,15 @@ export class ParticleNetwork {
     /**
      * Clean up event listeners
      */
-    cleanup() {
+    stop() {
         this.canvas.removeEventListener('mousemove', this.boundHandleMouseMove);
         this.canvas.removeEventListener('mouseleave', this.boundHandleMouseLeave);
-        this.stop();
+
+        this.isRunning = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+            this.animationId = null;
+        }
     }
 
     /**
@@ -76,14 +72,19 @@ export class ParticleNetwork {
     }
 
     /**
-     * Create initial set of particles with random positions
+     * Create initial set of particles or increases/decreases to desired particle count.
      */
-    createParticles() {
-        this.particles = [];
-        for (let i = 0; i < this.config.particleCount; i++) {
+    private createParticles() {
+        const particleCount = this.computeParticleCount();
+
+        // reuse existing particles if some exist
+        const newParticles = this.particles.slice(0, Math.min(particleCount, this.particles.length));
+
+        // create additional particles if needed
+        for (let i = newParticles.length; i < particleCount; i++) {
             const sizeRange = this.config.maxRadius - this.config.minRadius;
             const randomSize = Math.random() * sizeRange + this.config.minRadius;
-            this.particles.push({
+            newParticles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
                 xSpeed: (Math.random() - 0.5) * this.config.moveSpeed * 2,
@@ -91,13 +92,17 @@ export class ParticleNetwork {
                 radius: randomSize
             });
         }
+
+        return newParticles;
     }
-    
+
     /**
      * Update particle positions and handle boundary collisions
      */
     updateParticles(timestamp: DOMHighResTimeStamp) {
-        this.particles.forEach(particle => {
+        const particles = this.createParticles();
+
+        particles.forEach(particle => {
             // Update pulse effect
             if (this.config.pulseEnabled) {
                 this.pulseAngle += this.config.pulseSpeed;
@@ -137,12 +142,20 @@ export class ParticleNetwork {
                 }
             }
 
-            // Bounce off walls
-            if (particle.x < 0 || particle.x > this.canvas.width) {
+            // Bounce off walls / Move back into visible area if canvas size changed
+            if (particle.x < 0) {
                 particle.xSpeed = -particle.xSpeed;
             }
-            if (particle.y < 0 || particle.y > this.canvas.height) {
+            if (particle.x > this.canvas.width) {
+                particle.x = this.canvas.width;
+                particle.xSpeed = Math.abs(particle.xSpeed) * -1;
+            }
+            if (particle.y < 0) {
                 particle.ySpeed = -particle.ySpeed;
+            }
+            if (particle.y > this.canvas.height) {
+                particle.y = this.canvas.height;
+                particle.ySpeed = Math.abs(particle.ySpeed) * -1;
             }
 
             // Apply speed limits
@@ -154,6 +167,7 @@ export class ParticleNetwork {
         });
 
         this.lastTimestamp = timestamp;
+        this.particles = particles;
     }
 
     /**
@@ -217,17 +231,6 @@ export class ParticleNetwork {
     }
 
     /**
-     * Stop the animation and clean up
-     */
-    stop() {
-        this.isRunning = false;
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
-        }
-    }
-
-    /**
      * Start the animation
      */
     start() {
@@ -246,12 +249,12 @@ export class ParticleNetwork {
         this.ctx.globalAlpha = this.config.backgroundOpacity;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.globalAlpha = 1;
-        
+
         // Update and draw
         this.updateParticles(timestamp);
         this.drawParticles();
         this.drawConnections();
-        
+
         // Continue animation
         if (this.isRunning) {
             this.animationId = requestAnimationFrame((timestamp: DOMHighResTimeStamp) => this.animate(timestamp));
@@ -265,11 +268,7 @@ export class ParticleNetwork {
         const oldConfig = this.config;
         const newConfig = createConfig(userConfig);
         this.config = newConfig;
-        
-        if (oldConfig.particleCount != newConfig.particleCount) {
-            this.createParticles();
-        }
-        
+
         // Update speed for all particles if speed changes
         if (oldConfig.moveSpeed != newConfig.moveSpeed) {
             this.particles.forEach(particle => {
@@ -291,10 +290,14 @@ export class ParticleNetwork {
         }
     }
 
+    private computeParticleCount() {
+        return Math.floor(this.config.particleDensity * this.canvas.width * this.canvas.height / (100 * 100));
+    }
+
 }
 
 export const defaultConfig: ParticleNetworkConfig = {
-    particleCount: 100,
+    particleDensity: 20,
     minRadius: 2,
     maxRadius: 6,
     particleColor: '#000000',
@@ -350,7 +353,9 @@ interface MousePosition {
 }
 
 export interface ParticleNetworkConfig {
-    particleCount: number,
+    /** in particles per 100x100 pixels square */
+    particleDensity: number,
+
     minRadius: number,
     maxRadius: number,
     particleColor: string,
